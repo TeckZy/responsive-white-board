@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { WhiteboardService } from './main/white-board/whiteboard.service';
-import { Mode } from './main/white-board/constants';
+import { Mode, curveTypes } from './main/white-board/constants';
 
 @Component({
 	selector: 'app-root',
@@ -12,9 +12,14 @@ export class AppComponent {
 	backgroundColor = '#eee';
 	size = '5px';
 	isActive = false;
+	isPenActive = false;
 	currentMode = true;
+	pen = curveTypes;
+	curveType;
 
-	constructor(private whiteboardService: WhiteboardService) {}
+	constructor(private whiteboardService: WhiteboardService) {
+		this.curveType = curveTypes[0].curve;
+	}
 
 	onInit() {
 		console.log('Init!');
@@ -49,6 +54,10 @@ export class AppComponent {
 	setSize(size) {
 		this.size = size;
 		this.isActive = false;
+	}
+	setPenType(data) {
+		this.curveType = data.curve;
+		this.isPenActive = !this.isPenActive;
 	}
 	save() {
 		this.whiteboardService.save();

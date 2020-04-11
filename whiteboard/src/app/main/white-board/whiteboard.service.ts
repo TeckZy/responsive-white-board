@@ -16,6 +16,7 @@ export class WhiteboardService {
 	private redoSvgMethodCallSource = new Subject<any>();
 	private deleteModeSvgMethodCallSource = new Subject<any>();
 	private addImageMethodCallSource = new Subject<string | ArrayBuffer>();
+	private penChangeCallSource = new Subject<any>();
 
 	// Observable string streams
 	eraseSvgMethodCalled$ = this.eraseSvgMethodCallSource.asObservable();
@@ -23,6 +24,7 @@ export class WhiteboardService {
 	undoSvgMethodCalled$ = this.undoSvgMethodCallSource.asObservable();
 	redoSvgMethodCalled$ = this.redoSvgMethodCallSource.asObservable();
 	addImageMethodCalled$ = this.addImageMethodCallSource.asObservable();
+	penChangeCallcalled$ = this.penChangeCallSource.asObservable();
 
 	//Name is Mis Leading
 	deleteModeSvgMethodCalled$ = this.deleteModeSvgMethodCallSource.asObservable();
@@ -48,5 +50,8 @@ export class WhiteboardService {
 	}
 	public addImage(image: string | ArrayBuffer): void {
 		this.addImageMethodCallSource.next(image);
+	}
+	public changePen(fucntionRef: any): void {
+		this.penChangeCallSource.next(fucntionRef);
 	}
 }

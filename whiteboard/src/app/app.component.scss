@@ -10,10 +10,8 @@ $timing: 0.3s;
 	margin-left: auto;
 }
 .tools {
-	margin: 20px auto;
 	text-align: center;
 	display: flex;
-	justify-content: center;
 	align-items: center;
 	padding: 9px;
 	position: fixed;
@@ -21,6 +19,7 @@ $timing: 0.3s;
 	flex-direction: column;
 	left: 20px;
 	background: lightgrey;
+	height: 100%;
 
 	button {
 		display: inline-block;
@@ -104,6 +103,11 @@ $timing: 0.3s;
 			max-height: 15em;
 			opacity: 1;
 			display: inline-block;
+			position: absolute;
+			height: max-content;
+			overflow: scroll;
+			top: 0;
+			left: 4rem;
 			.dropdown-item {
 				border-top: 0.06em solid #d9d9d9;
 				&:hover {
@@ -114,4 +118,13 @@ $timing: 0.3s;
 			}
 		}
 	}
+}
+
+.container-c {
+	display: flex;
+}
+
+.conatiner-tool {
+	display: flex;
+	flex-direction: column;
 }

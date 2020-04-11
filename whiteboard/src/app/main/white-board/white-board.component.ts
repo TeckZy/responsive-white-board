@@ -5,11 +5,19 @@ import {
 	Input,
 	ElementRef,
 	Output,
-	EventEmitter
+	EventEmitter,
+	OnChanges,
+	OnDestroy
 } from '@angular/core';
 import { WhiteboardService } from './whiteboard.service';
-import { Subscription, Subject } from 'rxjs';
-import { WhiteboardOptions, ActionStack, ActionType, Mode } from './constants';
+import { Subscription } from 'rxjs';
+import {
+	WhiteboardOptions,
+	ActionStack,
+	ActionType,
+	Mode,
+	curveTypes
+} from './constants';
 import {
 	ContainerElement,
 	curveBasis,
@@ -18,7 +26,10 @@ import {
 	Selection,
 	line,
 	event,
-	mouse
+	mouse,
+	curveLinear,
+	curveBasisClosed,
+	curveBundle
 } from 'd3';
 
 @Component({
@@ -26,13 +37,17 @@ import {
 	templateUrl: './white-board.component.html',
 	styleUrls: ['./white-board.component.scss']
 })
-export class WhiteBoardComponent implements AfterViewInit {
+export class WhiteBoardComponent
+	implements AfterViewInit, OnDestroy, OnChanges {
 	@ViewChild('svgContainer', { static: false })
 	private svgContainer: ElementRef<ContainerElement>;
 	@Input() whiteboardOptions: WhiteboardOptions = new WhiteboardOptions();
 	@Input() color: string;
-	@Input() backgroundColor: string;
 	@Input() size: string;
+	@Input() backgroundColor: string;
+	@Input() height: number = 1000;
+	@Input() width: number = 1000;
+	@Input() curveType;
 	@Input() linejoin: 'miter' | 'round' | 'bevel' | 'miter-clip' | 'arcs';
 	@Input() linecap: 'butt' | 'square' | 'round';
 
@@ -54,6 +69,10 @@ export class WhiteBoardComponent implements AfterViewInit {
 	private currentStack: ActionStack[] = [];
 
 	constructor(private whiteboardService: WhiteboardService) {}
+	ngOnChanges(): void {
+		if (this.selection)
+			this.selection = this.initSvg(this.svgContainer.nativeElement);
+	}
 
 	ngAfterViewInit() {
 		/*
@@ -77,6 +96,11 @@ export class WhiteBoardComponent implements AfterViewInit {
 			)
 		);
 		this.subscriptionList.push(
+			this.whiteboardService.penChangeCallcalled$.subscribe((el) => {
+				this.selection = this.initSvg(this.svgContainer.nativeElement);
+			})
+		);
+		this.subscriptionList.push(
 			this.whiteboardService.undoSvgMethodCalled$.subscribe(() =>
 				this.undoDraw()
 			)
@@ -93,6 +117,7 @@ export class WhiteBoardComponent implements AfterViewInit {
 		);
 
 		this.selection = this.initSvg(this.svgContainer.nativeElement);
+		console.log(this.selection);
 	}
 
 	ngOnDestroy(): void {
@@ -102,8 +127,9 @@ export class WhiteBoardComponent implements AfterViewInit {
 	}
 
 	private initSvg(selector: ContainerElement) {
+		console.log('kkk');
 		console.log('init');
-		const d3Line = line().curve(curveBasis);
+		const d3Line = line().curve(this.curveType);
 		const svg = select(selector).call(
 			drag()
 				.container(selector)
@@ -134,9 +160,13 @@ export class WhiteBoardComponent implements AfterViewInit {
 						);
 					console.log(this.mode);
 					active.attr('d', d3Line);
-					event.on('drag', function () {
-						active.datum().push(mouse(this));
-						active.attr('d', d3Line);
+					event.on('drag', function (d) {
+						const k = mouse(this);
+						const el = select(this).node().getBoundingClientRect();
+						if (k[0] <= el.width && k[1] <= el.height) {
+							active.datum().push(k);
+							active.attr('d', d3Line);
+						}
 					});
 					event.on('end', () => {
 						active.attr('d', d3Line);
@@ -358,17 +388,21 @@ export class WhiteBoardComponent implements AfterViewInit {
 		link.click();
 	}
 
-	private saveLocal() {
-		//will write Some Logic Further
-		console.log(this.undoStack);
-	}
+	private saveLocal() {}
+	/**
+	 * Switch BetWeen The Write Mode and Read Mode
+	 */
 	private switchMode(mode: Mode) {
-		this.saveLocal();
-		if (mode.type == 'write') {
-			this.mode = true;
-		} else {
-			this.mode = false;
-		}
+		this.mode = mode.type == 'write' ? true : false;
 		this.modeChage.emit(mode);
+	}
+	/**
+	 * Switch BetWeen The Write Mode and Read Mode
+	 */
+	isValidPoint(x, y) {
+		const data = select(this.svgContainer.nativeElement).attr('width');
+
+		console.log(data);
+		// if (x < =  &&  y < =  )
 	}
 }
