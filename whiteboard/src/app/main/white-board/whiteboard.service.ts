@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
+import { Mode } from './constants';
 
 @Injectable({
 	providedIn: 'root'
@@ -13,6 +14,7 @@ export class WhiteboardService {
 	}>();
 	private undoSvgMethodCallSource = new Subject<any>();
 	private redoSvgMethodCallSource = new Subject<any>();
+	private deleteModeSvgMethodCallSource = new Subject<any>();
 	private addImageMethodCallSource = new Subject<string | ArrayBuffer>();
 
 	// Observable string streams
@@ -22,9 +24,15 @@ export class WhiteboardService {
 	redoSvgMethodCalled$ = this.redoSvgMethodCallSource.asObservable();
 	addImageMethodCalled$ = this.addImageMethodCallSource.asObservable();
 
+	//Name is Mis Leading
+	deleteModeSvgMethodCalled$ = this.deleteModeSvgMethodCallSource.asObservable();
+
 	// Service message commands
 	public erase(): void {
 		this.eraseSvgMethodCallSource.next();
+	}
+	public writeDeleteMode(mode: Mode) {
+		this.deleteModeSvgMethodCallSource.next(mode);
 	}
 	public save(
 		name: string = 'New image',

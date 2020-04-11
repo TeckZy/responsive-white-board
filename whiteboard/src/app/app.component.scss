@@ -3,10 +3,11 @@ $button-border-color: #166e84;
 $timing: 0.3s;
 
 .white-board {
-	width: 100%;
+	width: 85%;
 	height: 100vh;
 	background: #fff;
-	overflow: hidden;
+	// overflow: hidden;
+	margin-left: auto;
 }
 .tools {
 	margin: 20px auto;
@@ -14,9 +15,12 @@ $timing: 0.3s;
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	padding: 9px;
 	position: fixed;
-	bottom: 0;
+	top: 0;
+	flex-direction: column;
 	left: 20px;
+	background: lightgrey;
 
 	button {
 		display: inline-block;
@@ -29,6 +33,7 @@ $timing: 0.3s;
 		border-radius: 3px;
 		box-shadow: 0 5px 0px darken($button-bg-color, 0%);
 		border-bottom: 2px solid transparent;
+		margin: 6px;
 		&:hover {
 			background: darken($button-bg-color, 5%);
 			box-shadow: 0 4px 1px darken($button-bg-color, 5%);
@@ -45,9 +50,9 @@ $timing: 0.3s;
 	}
 	.color-label {
 		display: inline-block;
-		width: 25px;
+		width: 4rem;
 		height: 25px;
-		border-radius: 50%;
+		margin-top: 10px;
 		box-shadow: 0 19px 38px rgba(0, 0, 0, 0.3),
 			0 15px 12px rgba(0, 0, 0, 0.22);
 		margin-right: 5px;

@@ -18,6 +18,9 @@ export enum ActionType {
 	Line,
 	Image
 }
+export class Mode {
+	type: 'write' | 'erace';
+}
 
 export const curveTypes = [
 	{
@@ -181,3 +184,10 @@ export const curveTypes = [
 			'Interpolates the points with alternating horizontal and vertical linear segments. The y value changes before the x value.'
 	}
 ];
+
+export const strokesType = {
+	stroke: '',
+	'stroke-width': '',
+	'stroke-linecap': '',
+	'stroke-dasharray': ''
+};

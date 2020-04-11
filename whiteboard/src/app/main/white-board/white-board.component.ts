@@ -8,8 +8,8 @@ import {
 	EventEmitter
 } from '@angular/core';
 import { WhiteboardService } from './whiteboard.service';
-import { Subscription } from 'rxjs';
-import { WhiteboardOptions, ActionStack, ActionType } from './constants';
+import { Subscription, Subject } from 'rxjs';
+import { WhiteboardOptions, ActionStack, ActionType, Mode } from './constants';
 import {
 	ContainerElement,
 	curveBasis,
@@ -42,6 +42,8 @@ export class WhiteBoardComponent implements AfterViewInit {
 	@Output() redo = new EventEmitter();
 	@Output() save = new EventEmitter<string | Blob>();
 	@Output() imageAdded = new EventEmitter();
+	@Output() modeChage = new EventEmitter<Mode>();
+	mode = true;
 
 	private selection: Selection<any, unknown, null, undefined> = undefined;
 
@@ -49,13 +51,23 @@ export class WhiteBoardComponent implements AfterViewInit {
 
 	private undoStack: ActionStack[] = [];
 	private redoStack: ActionStack[] = [];
+	private currentStack: ActionStack[] = [];
 
 	constructor(private whiteboardService: WhiteboardService) {}
 
 	ngAfterViewInit() {
+		/*
+		Handle Subscription
+	*/
+
 		this.subscriptionList.push(
 			this.whiteboardService.eraseSvgMethodCalled$.subscribe(() =>
 				this.eraseSvg(this.selection)
+			)
+		);
+		this.subscriptionList.push(
+			this.whiteboardService.deleteModeSvgMethodCalled$.subscribe(
+				(mode: Mode) => this.switchMode(mode)
 			)
 		);
 
@@ -90,8 +102,8 @@ export class WhiteBoardComponent implements AfterViewInit {
 	}
 
 	private initSvg(selector: ContainerElement) {
+		console.log('init');
 		const d3Line = line().curve(curveBasis);
-		console.log(d3Line);
 		const svg = select(selector).call(
 			drag()
 				.container(selector)
@@ -102,6 +114,7 @@ export class WhiteBoardComponent implements AfterViewInit {
 				.on('start', () => {
 					const d = event.subject;
 					const active = svg
+
 						.append('path')
 						.datum(d)
 						.attr('class', 'line')
@@ -109,12 +122,17 @@ export class WhiteBoardComponent implements AfterViewInit {
 							'style',
 							`
            fill: none;
-           stroke: ${this.color || this.whiteboardOptions.color};
+           stroke: ${
+				this.mode
+					? this.color || this.whiteboardOptions.color
+					: this.backgroundColor
+			};
            stroke-width: ${this.size || this.whiteboardOptions.size};
            stroke-linejoin: ${this.linejoin || this.whiteboardOptions.linejoin};
            stroke-linecap: ${this.linecap || this.whiteboardOptions.linecap};
            `
 						);
+					console.log(this.mode);
 					active.attr('d', d3Line);
 					event.on('drag', function () {
 						active.datum().push(mouse(this));
@@ -137,10 +155,12 @@ export class WhiteBoardComponent implements AfterViewInit {
 	}
 
 	private addImage(image: string | ArrayBuffer) {
+		console.log('addImage');
 		this.drawImage(image);
 	}
 
 	private eraseSvg(svg: Selection<any, unknown, null, undefined>) {
+		console.log('erasesvg');
 		svg.selectAll('*').remove();
 		this.undoStack = [];
 		this.redoStack = [];
@@ -148,6 +168,7 @@ export class WhiteBoardComponent implements AfterViewInit {
 	}
 
 	private saveSvg(name, format: 'png' | 'jpeg' | 'svg') {
+		console.log('SaveSvg');
 		const svgString = this.saveAsSvg(this.selection.clone(true).node());
 		if (format === 'svg') {
 			this.download(
@@ -171,6 +192,7 @@ export class WhiteBoardComponent implements AfterViewInit {
 	}
 
 	private undoDraw() {
+		console.log('Undo');
 		if (!this.undoStack.length) {
 			return;
 		}
@@ -187,6 +209,7 @@ export class WhiteBoardComponent implements AfterViewInit {
 	}
 
 	private redoDraw() {
+		console.log('redoF');
 		if (!this.redoStack.length) {
 			return;
 		}
@@ -207,6 +230,7 @@ export class WhiteBoardComponent implements AfterViewInit {
 	}
 
 	private drawImage(image: string | ArrayBuffer) {
+		console.log('DrwaImage');
 		const group = this.selection
 			.append('g')
 			.data([{ x: 20, y: 20, r: 1, scale: 1 }])
@@ -332,5 +356,19 @@ export class WhiteBoardComponent implements AfterViewInit {
 		link.download = name || 'new white-board';
 		document.body.appendChild(link);
 		link.click();
+	}
+
+	private saveLocal() {
+		//will write Some Logic Further
+		console.log(this.undoStack);
+	}
+	private switchMode(mode: Mode) {
+		this.saveLocal();
+		if (mode.type == 'write') {
+			this.mode = true;
+		} else {
+			this.mode = false;
+		}
+		this.modeChage.emit(mode);
 	}
 }

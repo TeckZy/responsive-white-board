@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { WhiteboardService } from './main/white-board/whiteboard.service';
+import { Mode } from './main/white-board/constants';
 
 @Component({
 	selector: 'app-root',
@@ -11,6 +12,7 @@ export class AppComponent {
 	backgroundColor = '#eee';
 	size = '5px';
 	isActive = false;
+	currentMode = true;
 
 	constructor(private whiteboardService: WhiteboardService) {}
 
@@ -31,6 +33,14 @@ export class AppComponent {
 	}
 	onImageAded() {
 		console.log('ImageAded!');
+	}
+	modeSwitch() {
+		const value = new Mode();
+		value.type = this.currentMode ? 'erace' : 'write';
+		this.whiteboardService.writeDeleteMode(value);
+	}
+	onModeChange(ev: Mode) {
+		this.currentMode = !this.currentMode;
 	}
 
 	erase() {
