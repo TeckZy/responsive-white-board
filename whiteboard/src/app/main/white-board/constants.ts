@@ -24,7 +24,7 @@ export class Mode {
 
 export const curveTypes = [
 	{
-		name: 'curveLinear',
+		name: 'Linear',
 		curve: d3.curveLinear,
 		active: true,
 		lineString: '',
@@ -32,7 +32,7 @@ export const curveTypes = [
 		info: 'Interpolates the points using linear segments.'
 	},
 	{
-		name: 'curveBasis',
+		name: 'Basic',
 		curve: d3.curveBasis,
 		active: true,
 		lineString: '',
@@ -41,7 +41,7 @@ export const curveTypes = [
 			'Interpolates the start and end points and approximates the inner points using a B-spline.'
 	},
 	{
-		name: 'curveBasisClosed',
+		name: 'Closed',
 		curve: d3.curveBasisClosed,
 		active: false,
 		lineString: '',
@@ -49,7 +49,7 @@ export const curveTypes = [
 		info: 'Uses a closed B-Spline to approximate the points.'
 	},
 	{
-		name: 'curveBundle (ß=0)',
+		name: 'Bundle (ß=0)',
 		curve: d3.curveBundle.beta(0),
 		active: false,
 		lineString: '',
